@@ -6,11 +6,11 @@ var Jaffa;
         function System() {
             this.nextgame = null;
             this.game = null;
-            this.SetFPS(30.0);
+            this.setFPS(30.0);
             this.input = null;
-            this.run = false;
+            this.isrun = false;
         }
-        System.prototype.GameLoop = function () {
+        System.prototype.gameLoop = function () {
             if (this.nextgame != null) {
                 if (this.game != null) {
                     this.game.CleanUp();
@@ -23,12 +23,12 @@ var Jaffa;
             return this.game.MainLoop();
         };
 
-        System.prototype.SetInput = function (input) {
+        System.prototype.setInput = function (input) {
             this.input = input;
             return true;
         };
 
-        System.prototype.SetFPS = function (fps) {
+        System.prototype.setFPS = function (fps) {
             this.fps = fps;
 
             //this.beforetime = + new Date();
@@ -36,10 +36,10 @@ var Jaffa;
             return true;
         };
 
-        System.prototype.Run = function () {
+        System.prototype.run = function () {
             //var now = +new Date();
             var _this = this;
-            if (this.GameLoop() && this.run) {
+            if (this.gameLoop() && this.run) {
                 //var wait;
                 //if ( this.framecount >= this.fps )
                 //{
@@ -50,10 +50,10 @@ var Jaffa;
                 //++this.framecount;
                 //setTimeout( JaffaData.system.Run, 1000);
                 setTimeout(function () {
-                    _this.Run();
+                    _this.run();
                 }, 1000.0 / this.fps); //wait );
                 if (this.input) {
-                    this.input.Renewal();
+                    this.input.renewal();
                 }
                 return true;
             }
@@ -61,25 +61,25 @@ var Jaffa;
             return false;
         };
 
-        System.prototype.Start = function () {
-            if (this.run == false) {
-                this.run = true;
-                this.Run();
+        System.prototype.start = function () {
+            if (this.isrun == false) {
+                this.isrun = true;
+                this.run();
             }
             return true;
         };
 
-        System.prototype.Stop = function () {
-            this.run = false;
+        System.prototype.stop = function () {
+            this.isrun = false;
             return false;
         };
 
-        System.prototype.SetNewGame = function (game) {
+        System.prototype.setNewGame = function (game) {
             this.nextgame = game;
             return true;
         };
 
-        System.GetBrowser = function () {
+        System.getBrowser = function () {
             var userAgent = window.navigator.userAgent.toLowerCase();
 
             if (userAgent.indexOf('msie') != -1) {
@@ -144,19 +144,19 @@ var Jaffa;
             this.scrolltimer = 0;
             this.scrolltimeron = false;
         }
-        Input.prototype.MouseUp = function (ev) {
+        Input.prototype.mouseUp = function (ev) {
             this.click = false;
-            this.MouseEvent(ev);
+            this.mouseEvent(ev);
             return false;
         };
 
-        Input.prototype.MouseDown = function (ev) {
+        Input.prototype.mouseDown = function (ev) {
             this.click = true;
-            this.MouseEvent(ev);
+            this.mouseEvent(ev);
             return false;
         };
 
-        Input.prototype.MouseEvent = function (ev) {
+        Input.prototype.mouseEvent = function (ev) {
             if (ev.offsetX != undefined) {
                 this.mx = ev.offsetX; //clientX;
                 this.my = ev.offsetY; //clientY;
@@ -167,48 +167,48 @@ var Jaffa;
             return false;
         };
 
-        Input.prototype.TouchUp = function (ev) {
+        Input.prototype.touchUp = function (ev) {
             this.click = false;
-            this.TouchEvent(ev);
+            this.touchEvent(ev);
             return false;
         };
 
-        Input.prototype.TouchDown = function (ev) {
+        Input.prototype.touchDown = function (ev) {
             this.click = true;
-            this.TouchEvent(ev);
+            this.touchEvent(ev);
             return false;
         };
 
-        Input.prototype.TouchEvent = function (ev) {
+        Input.prototype.touchEvent = function (ev) {
             this.mx = ev.touches[0].clientX - this.cx;
             this.my = ev.touches[0].clientY - this.cy;
             return false;
         };
 
-        Input.prototype.KeyDown = function (ev) {
+        Input.prototype.keyDown = function (ev) {
             this.key[ev.keyCode] = true;
             if (!(ev.keyCode in this.keyframe)) {
                 this.keyframe[ev.keyCode] = 0;
             }
-            this.KeyEvent(ev);
+            this.keyEvent(ev);
             return true;
         };
 
-        Input.prototype.KeyUp = function (ev) {
+        Input.prototype.keyUp = function (ev) {
             this.key[ev.keyCode] = false;
             if (this.keyframe[ev.keyCode] == undefined) {
                 this.keyframe[ev.keyCode] = 0;
             }
-            this.KeyEvent(ev);
+            this.keyEvent(ev);
             return true;
         };
 
-        Input.prototype.KeyEvent = function (ev) {
+        Input.prototype.keyEvent = function (ev) {
             // Shift, Ctrl, Alt ...
             return true;
         };
 
-        Input.prototype.Renewal = function () {
+        Input.prototype.renewal = function () {
             var key;
             if (this.click) {
                 // click now
@@ -231,7 +231,7 @@ var Jaffa;
             }
         };
 
-        Input.prototype.RemoveTouchEvent = function (canvas) {
+        Input.prototype.removeTouchEvent = function (canvas) {
             if (typeof canvas === "undefined") { canvas = this.canvas; }
             if (this.toucheventdown) {
                 canvas.removeEventListener("touchstart", this.toucheventdown, false);
@@ -248,24 +248,24 @@ var Jaffa;
             return true;
         };
 
-        Input.prototype.AddTouchEvent = function (canvas, mouseremove) {
+        Input.prototype.addTouchEvent = function (canvas, mouseremove) {
             var _this = this;
             if (typeof canvas === "undefined") { canvas = this.canvas; }
             if (typeof mouseremove === "undefined") { mouseremove = true; }
             if (mouseremove) {
-                this.RemoveMouseEvent(canvas);
+                this.removeMouseEvent(canvas);
             } else if (this.toucheventdown != null || this.toucheventmove != null || this.toucheventup != null) {
-                this.RemoveTouchEvent(canvas);
+                this.removeTouchEvent(canvas);
             }
 
             this.toucheventdown = function (ev) {
-                _this.TouchDown(ev);
+                _this.touchDown(ev);
             };
             this.toucheventmove = function (ev) {
-                _this.TouchEvent(ev);
+                _this.touchEvent(ev);
             };
             this.toucheventup = function (ev) {
-                _this.TouchUp(ev);
+                _this.touchUp(ev);
             };
 
             canvas.addEventListener("touchstart", this.toucheventdown, false);
@@ -274,7 +274,7 @@ var Jaffa;
             return true;
         };
 
-        Input.prototype.RemoveMouseEvent = function (canvas) {
+        Input.prototype.removeMouseEvent = function (canvas) {
             if (typeof canvas === "undefined") { canvas = this.canvas; }
             if (this.mouseeventdown != null) {
                 canvas.removeEventListener("mousedown", this.mouseeventdown, false);
@@ -292,24 +292,24 @@ var Jaffa;
             return true;
         };
 
-        Input.prototype.AddMouseEvent = function (canvas, touchremove) {
+        Input.prototype.addMouseEvent = function (canvas, touchremove) {
             var _this = this;
             if (typeof canvas === "undefined") { canvas = this.canvas; }
             if (typeof touchremove === "undefined") { touchremove = true; }
             if (touchremove) {
-                this.RemoveTouchEvent(canvas);
+                this.removeTouchEvent(canvas);
             } else if (this.mouseeventdown != null || this.mouseeventmove != null || this.mouseeventup != null) {
-                this.RemoveMouseEvent(canvas);
+                this.removeMouseEvent(canvas);
             }
 
             this.mouseeventdown = function (ev) {
-                _this.MouseDown(ev);
+                _this.mouseDown(ev);
             };
             this.mouseeventmove = function (ev) {
-                _this.MouseEvent(ev);
+                _this.mouseEvent(ev);
             };
             this.mouseeventup = function (ev) {
-                _this.MouseUp(ev);
+                _this.mouseUp(ev);
             };
 
             canvas.addEventListener("mousedown", this.mouseeventdown, false);
@@ -321,7 +321,7 @@ var Jaffa;
             return true;
         };
 
-        Input.prototype.RemoveKeyEvent = function () {
+        Input.prototype.removeKeyEvent = function () {
             if (this.keyeventdown) {
                 window.removeEventListener("keydown", this.keyeventdown, false);
             } else if (this.keyeventup) {
@@ -332,13 +332,13 @@ var Jaffa;
             return true;
         };
 
-        Input.prototype.AddKeyEvent = function () {
+        Input.prototype.addKeyEvent = function () {
             var _this = this;
             this.keyeventdown = function (ev) {
-                _this.KeyDown(ev);
+                _this.keyDown(ev);
             };
             this.keyeventup = function (ev) {
-                _this.KeyUp(ev);
+                _this.keyUp(ev);
             };
 
             window.addEventListener("keydown", this.keyeventdown, false);
@@ -346,11 +346,11 @@ var Jaffa;
             return true;
         };
 
-        Input.CanUseTouch = function () {
+        Input.canUseTouch = function () {
             return (('createTouch' in document) || ('ontouchstart' in document));
         };
 
-        Input.prototype.ResetCanvasPosition_ = function () {
+        Input.prototype.resetCanvasPosition_ = function () {
             var html = document.documentElement;
             var body = document.body;
             var rect = this.canvas.getBoundingClientRect();
@@ -364,55 +364,55 @@ var Jaffa;
             return true;
         };
 
-        Input.prototype.ResetCanvasPosition = function () {
+        Input.prototype.resetCanvasPosition = function () {
             var _this = this;
             if (this.scrolltimeron) {
                 clearTimeout(this.scrolltimer);
             }
             this.scrolltimeron = true;
             this.scrolltimer = setTimeout(function () {
-                _this.ResetCanvasPosition_();
+                _this.resetCanvasPosition_();
             }, 100);
             return true;
         };
 
-        Input.prototype.SetCanvas = function (canvas) {
+        Input.prototype.setCanvas = function (canvas) {
             var _this = this;
             //canvas.addEventListener("click", (ev: DragEvent) => { this.ClickEvent(ev) }, false);
             this.canvas = canvas;
 
-            if (Input.CanUseTouch()) {
-                this.AddTouchEvent(canvas);
-                this.AddMouseEvent(canvas);
+            if (Input.canUseTouch()) {
+                this.addTouchEvent(canvas);
+                this.addMouseEvent(canvas);
             } else {
-                this.AddMouseEvent(canvas);
+                this.addMouseEvent(canvas);
             }
-            this.AddKeyEvent();
+            this.addKeyEvent();
 
             //this.cx = canvas.offsetLeft;
             //this.cy = canvas.offsetTop;
-            this.ResetCanvasPosition();
+            this.resetCanvasPosition();
 
             window.addEventListener("scroll", function () {
-                _this.ResetCanvasPosition();
+                _this.resetCanvasPosition();
             }, false);
 
             return true;
         };
 
-        Input.prototype.GetX = function () {
+        Input.prototype.getX = function () {
             return this.mx;
         };
 
-        Input.prototype.GetY = function () {
+        Input.prototype.getY = function () {
             return this.my;
         };
 
-        Input.prototype.GetMouse = function () {
+        Input.prototype.getMouse = function () {
             return this.clickframe;
         };
 
-        Input.prototype.GetKeyNum = function (keynum) {
+        Input.prototype.getKeyNum = function (keynum) {
             if (this.keyframe[keynum]) {
                 return this.keyframe[keynum];
             }
@@ -430,7 +430,7 @@ var Jaffa;
     var Net = (function () {
         function Net() {
         }
-        Net.prototype.HttpCreate = function () {
+        Net.prototype.httpCreate = function () {
             var httpobj = null;
             try  {
                 httpobj = new XMLHttpRequest();
@@ -448,10 +448,10 @@ var Jaffa;
             return httpobj;
         };
 
-        Net.prototype.HttpGet = function (address, senddata) {
+        Net.prototype.httpGet = function (address, senddata) {
             if (typeof senddata === "undefined") { senddata = null; }
             //�I�u�W�F�N�g�𐶐����Ă�炤
-            var httpobj = this.HttpCreate();
+            var httpobj = this.httpCreate();
 
             if (httpobj) {
                 httpobj.open("GET", address, false);
@@ -461,10 +461,10 @@ var Jaffa;
             return "";
         };
 
-        Net.prototype.HttpGet_ = function (address, func) {
+        Net.prototype.httpGet_ = function (address, func) {
             if (typeof func === "undefined") { func = null; }
             //�I�u�W�F�N�g�𐶐����Ă�炤
-            var httpobj = this.HttpCreate();
+            var httpobj = this.httpCreate();
 
             if (httpobj) {
                 if (func) {
@@ -494,12 +494,13 @@ var Jaffa;
         function DrawCanvas() {
             this.imgs = {};
             this.fonts = {};
+            this.createFont(0);
         }
-        DrawCanvas.prototype.GetCanvas = function () {
+        DrawCanvas.prototype.getCanvas = function () {
             return this.canvas;
         };
 
-        DrawCanvas.prototype.SetCanvas = function (value) {
+        DrawCanvas.prototype.setCanvas = function (value) {
             if (typeof (value) == "string") {
                 this.canvas = document.getElementById(value);
             } else {
@@ -511,12 +512,12 @@ var Jaffa;
             return true;
         };
 
-        DrawCanvas.prototype.SetCanvasScale = function (scale) {
+        DrawCanvas.prototype.setCanvasScale = function (scale) {
             this.context.scale(scale, scale);
             return true;
         };
 
-        DrawCanvas.prototype.LoadImage = function (imgnum, imgaddress) {
+        DrawCanvas.prototype.loadImage = function (imgnum, imgaddress) {
             this.imgs[imgnum] = new Image();
 
             this.imgs[imgnum].src = imgaddress; // Load image start.
@@ -524,41 +525,49 @@ var Jaffa;
             return true;
         };
 
-        DrawCanvas.prototype.ClearScreen = function () {
+        DrawCanvas.prototype.clearScreen = function () {
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             return true;
         };
 
-        DrawCanvas.prototype.DrawBox = function (dx, dy, w, h, color) {
+        DrawCanvas.prototype.drawBox = function (dx, dy, w, h, color) {
             //var a = "rgba( 192, 80, 77, 255 )";
             this.context.fillStyle = color;
             this.context.fillRect(dx, dy, w, h);
             return true;
         };
 
-        DrawCanvas.prototype.DrawImage = function (imgnum, rx, ry, w, h, dx, dy) {
+        DrawCanvas.prototype.drawImage = function (imgnum, rx, ry, w, h, dx, dy) {
             this.context.drawImage(this.imgs[imgnum], rx, ry, w, h, Math.floor(dx), Math.floor(dy), w, h);
             return true;
         };
 
-        DrawCanvas.prototype.DrawImageC = function (imgnum, rx, ry, w, h, dx, dy) {
+        DrawCanvas.prototype.drawImageC = function (imgnum, rx, ry, w, h, dx, dy) {
             this.context.drawImage(this.imgs[imgnum], rx, ry, w, h, Math.floor(dx - w / 2), Math.floor(dy - h / 2), w, h);
             return true;
         };
 
-        DrawCanvas.prototype.CreateFont = function (fontnum, fontdata, color) {
+        DrawCanvas.prototype.setAlpha = function (alpha) {
+            this.context.globalAlpha = alpha;
+        };
+
+        DrawCanvas.prototype.createFont = function (fontnum, fontsize, fontdata, color) {
+            if (typeof fontsize === "undefined") { fontsize = 10; }
+            if (typeof fontdata === "undefined") { fontdata = ""; }
+            if (typeof color === "undefined") { color = "rgb(0,0,0)"; }
             this.fonts[fontnum] = new FontData();
             this.fonts[fontnum].fontdata = fontdata;
             this.fonts[fontnum].color = color;
+            this.fonts[fontnum].size = fontsize;
         };
 
-        DrawCanvas.prototype.Print = function (fontnum, dx, dy, str) {
-            if (this.fonts[fontnum]) {
-                this.context.font = this.fonts[fontnum].fontdata;
-                this.context.fillStyle = this.fonts[fontnum].color;
-            } else {
-                this.context.fillStyle = "rgb(0,0,0)";
+        DrawCanvas.prototype.print = function (fontnum, dx, dy, str) {
+            if (!this.fonts[fontnum]) {
+                fontnum = 0;
             }
+            this.context.font = this.fonts[fontnum].fontdata;
+            this.context.fillStyle = this.fonts[fontnum].color;
+            dy += this.fonts[fontnum].size;
             this.context.fillText(str, dx, dy);
             return true;
         };
@@ -577,21 +586,21 @@ var Jaffa;
                 Jaffa.system = new Jaffa.System();
                 Jaffa.draw = new DrawCanvas();
                 Jaffa.input = new Jaffa.Input();
-                Jaffa.draw.SetCanvas(canvasid);
-                Jaffa.input.SetCanvas(Jaffa.draw.GetCanvas());
-                Jaffa.system.SetInput(Jaffa.input);
+                Jaffa.draw.setCanvas(canvasid);
+                Jaffa.input.setCanvas(Jaffa.draw.getCanvas());
+                Jaffa.system.setInput(Jaffa.input);
             }
             this.system = Jaffa.system;
             this.draw = Jaffa.draw;
             this.input = Jaffa.input;
         }
         Game.prototype.Start = function () {
-            this.system.SetNewGame(this);
-            this.system.Start();
+            this.system.setNewGame(this);
+            this.system.start();
         };
 
         Game.prototype.Stop = function () {
-            this.system.Stop();
+            this.system.stop();
         };
 
         // User method.

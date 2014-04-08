@@ -5,7 +5,7 @@ module Jaffa
     private nextgame: Jaffa.Game;
     private game: Jaffa.Game;
     private fps: number;
-    private run: boolean;
+    private isrun: boolean;
     private input: Jaffa.Input;
     //private beforetime: number;
     //private framecount: number;
@@ -14,12 +14,12 @@ module Jaffa
     {
       this.nextgame = null;
       this.game = null;
-      this.SetFPS(30.0);
+      this.setFPS(30.0);
       this.input = null;
-      this.run = false;
+      this.isrun = false;
     }
 
-    private GameLoop() : boolean
+    private gameLoop() : boolean
     {
       if (this.nextgame != null)
       {
@@ -35,13 +35,13 @@ module Jaffa
       return this.game.MainLoop();
     }
 
-    public SetInput( input: Jaffa.Input ): boolean
+    public setInput( input: Jaffa.Input ): boolean
     {
       this.input = input;
       return true;
     }
 
-    public SetFPS(fps: number): boolean
+    public setFPS(fps: number): boolean
     {
       this.fps = fps;
       //this.beforetime = + new Date();
@@ -49,11 +49,11 @@ module Jaffa
       return true;
     }
     
-    private Run(): boolean
+    private run(): boolean
     {
       //var now = +new Date();
 
-      if ( this.GameLoop() && this.run )
+      if ( this.gameLoop() && this.run )
       {
         //var wait;
         //if ( this.framecount >= this.fps )
@@ -65,11 +65,11 @@ module Jaffa
         //++this.framecount;
         //setTimeout( JaffaData.system.Run, 1000);
         setTimeout(
-          () => { this.Run(); },
+          () => { this.run(); },
           1000.0 / this.fps);//wait );
         if (this.input)
         {
-          this.input.Renewal();
+          this.input.renewal();
         }
         return true;
       }
@@ -77,27 +77,29 @@ module Jaffa
       return false;
     }
 
-    public Start(): boolean {
-      if ( this.run == false )
+    public start(): boolean
+    {
+      if ( this.isrun == false )
       {
-        this.run = true;
-        this.Run();
+        this.isrun = true;
+        this.run();
       }
       return true;
     }
 
-    public Stop(): boolean {
-      this.run = false;
+    public stop(): boolean
+    {
+      this.isrun = false;
       return false;
     }
     
-    public SetNewGame(game: Jaffa.Game): boolean
+    public setNewGame(game: Jaffa.Game): boolean
     {
       this.nextgame = game;
       return true;
     }
 
-    public static GetBrowser(): string
+    public static getBrowser(): string
     {
       var userAgent: string = window.navigator.userAgent.toLowerCase();
 
@@ -204,23 +206,24 @@ module Jaffa
       this.scrolltimeron = false;
     }
     
-    private MouseUp(ev: DragEvent): boolean
+    private mouseUp(ev: DragEvent): boolean
     {
       this.click = false;
-      this.MouseEvent(ev);
+      this.mouseEvent(ev);
       return false;
     }
 
-    private MouseDown(ev: DragEvent): boolean
+    private mouseDown(ev: DragEvent): boolean
     {
       this.click = true;
-      this.MouseEvent(ev);
+      this.mouseEvent(ev);
       return false;
     }
 
-    private MouseEvent(ev: DragEvent): boolean
+    private mouseEvent(ev: DragEvent): boolean
     {
-      if (ev.offsetX != undefined) {
+      if (ev.offsetX != undefined)
+      {
         this.mx = ev.offsetX;//clientX;
         this.my = ev.offsetY;//clientY;
       } else
@@ -231,53 +234,53 @@ module Jaffa
       return false;
     }
 
-    private TouchUp(ev: any): boolean
+    private touchUp(ev: any): boolean
     {
       this.click = false;
-      this.TouchEvent(ev);
+      this.touchEvent(ev);
       return false;
     }
 
-    private TouchDown(ev: any): boolean
+    private touchDown(ev: any): boolean
     {
       this.click = true;
-      this.TouchEvent(ev);
+      this.touchEvent(ev);
       return false;
     }
 
-    private TouchEvent(ev: any): boolean
+    private touchEvent(ev: any): boolean
     {
       this.mx = ev.touches[ 0 ].clientX - this.cx;
       this.my = ev.touches[0].clientY - this.cy;
       return false;
     }
 
-    private KeyDown(ev: KeyboardEvent): boolean
+    private keyDown(ev: KeyboardEvent): boolean
     {
       this.key[ev.keyCode] = true;
       if (!(ev.keyCode in this.keyframe)) { this.keyframe[ev.keyCode] = 0;  }
-      this.KeyEvent(ev);
+      this.keyEvent(ev);
       return true;
     }
 
-    private KeyUp(ev: KeyboardEvent): boolean
+    private keyUp(ev: KeyboardEvent): boolean
     {
       this.key[ev.keyCode] = false;
       if (this.keyframe[ev.keyCode] == undefined)
       {
         this.keyframe[ev.keyCode] = 0;
       }
-      this.KeyEvent(ev);
+      this.keyEvent(ev);
       return true;
     }
 
-    private KeyEvent(ev: KeyboardEvent): boolean
+    private keyEvent(ev: KeyboardEvent): boolean
     {
       // Shift, Ctrl, Alt ...
       return true;
     }
     
-    public Renewal()
+    public renewal()
     {
       var key;
       if (this.click)
@@ -309,7 +312,7 @@ module Jaffa
 
     }
 
-    public RemoveTouchEvent( canvas: HTMLCanvasElement = this.canvas ): boolean
+    public removeTouchEvent( canvas: HTMLCanvasElement = this.canvas ): boolean
     {
       if ( this.toucheventdown )
       {
@@ -329,20 +332,20 @@ module Jaffa
       return true;
     }
 
-    public AddTouchEvent(canvas: HTMLCanvasElement): boolean;
-    public AddTouchEvent(canvas: HTMLCanvasElement = this.canvas, mouseremove:boolean = true ): boolean
+    public addTouchEvent(canvas: HTMLCanvasElement): boolean;
+    public addTouchEvent(canvas: HTMLCanvasElement = this.canvas, mouseremove:boolean = true ): boolean
     {
       if ( mouseremove )
       {
-        this.RemoveMouseEvent( canvas );
+        this.removeMouseEvent( canvas );
       } else if (this.toucheventdown != null || this.toucheventmove != null || this.toucheventup != null)
       {
-        this.RemoveTouchEvent( canvas );
+        this.removeTouchEvent( canvas );
       }
 
-      this.toucheventdown = ( ev ) => { this.TouchDown(ev) };
-      this.toucheventmove = ( ev ) => { this.TouchEvent( ev ) };
-      this.toucheventup   = ( ev ) => { this.TouchUp(ev) };
+      this.toucheventdown = ( ev ) => { this.touchDown(ev) };
+      this.toucheventmove = ( ev ) => { this.touchEvent( ev ) };
+      this.toucheventup   = ( ev ) => { this.touchUp(ev) };
 
       canvas.addEventListener("touchstart", this.toucheventdown, false);
       canvas.addEventListener("touchmove", this.toucheventmove, false);
@@ -350,7 +353,7 @@ module Jaffa
       return true;
     }
 
-    public RemoveMouseEvent( canvas: HTMLCanvasElement = this.canvas ): boolean
+    public removeMouseEvent( canvas: HTMLCanvasElement = this.canvas ): boolean
     {
       if ( this.mouseeventdown != null )
       {
@@ -371,19 +374,20 @@ module Jaffa
       return true;
     }
 
-    public AddMouseEvent(canvas: HTMLCanvasElement): boolean;
-    public AddMouseEvent(canvas: HTMLCanvasElement = this.canvas, touchremove: boolean = true): boolean {
+    public addMouseEvent(canvas: HTMLCanvasElement): boolean;
+    public addMouseEvent(canvas: HTMLCanvasElement = this.canvas, touchremove: boolean = true): boolean
+    {
       if ( touchremove )
       {
-        this.RemoveTouchEvent(canvas);
+        this.removeTouchEvent(canvas);
       } else if (this.mouseeventdown != null || this.mouseeventmove != null || this.mouseeventup != null)
       {
-        this.RemoveMouseEvent(canvas);
+        this.removeMouseEvent(canvas);
       }
 
-      this.mouseeventdown = ( ev: DragEvent ) => { this.MouseDown( ev ) };
-      this.mouseeventmove = ( ev: DragEvent ) => { this.MouseEvent( ev ) };
-      this.mouseeventup   = ( ev: DragEvent ) => { this.MouseUp( ev ) };
+      this.mouseeventdown = ( ev: DragEvent ) => { this.mouseDown( ev ) };
+      this.mouseeventmove = ( ev: DragEvent ) => { this.mouseEvent( ev ) };
+      this.mouseeventup   = ( ev: DragEvent ) => { this.mouseUp( ev ) };
 
       canvas.addEventListener("mousedown", this.mouseeventdown, false);
       canvas.addEventListener("mousemove", this.mouseeventmove, false);
@@ -394,7 +398,7 @@ module Jaffa
       return true;
     }
 
-    public RemoveKeyEvent(): boolean
+    public removeKeyEvent(): boolean
     {
       if (this.keyeventdown)
       {
@@ -408,23 +412,22 @@ module Jaffa
       return true;
     }
 
-    public AddKeyEvent(): boolean
+    public addKeyEvent(): boolean
     {
-
-      this.keyeventdown = (ev: KeyboardEvent) => { this.KeyDown(ev) };
-      this.keyeventup = (ev: KeyboardEvent) => { this.KeyUp(ev) };
+      this.keyeventdown = (ev: KeyboardEvent) => { this.keyDown(ev) };
+      this.keyeventup = (ev: KeyboardEvent) => { this.keyUp(ev) };
 
       window.addEventListener("keydown", this.keyeventdown, false);
       window.addEventListener("keyup", this.keyeventup, false);
       return true;
     }
 
-    public static CanUseTouch(): boolean
+    public static canUseTouch(): boolean
     {
       return ( ('createTouch' in document) || ('ontouchstart' in document) );//ontouchstart === undefined )
     }
 
-    private ResetCanvasPosition_(): boolean
+    private resetCanvasPosition_(): boolean
     {
       var html = document.documentElement;
       var body = document.body;
@@ -439,57 +442,57 @@ module Jaffa
       return true;
     }
 
-    public ResetCanvasPosition(): boolean
+    public resetCanvasPosition(): boolean
     {
       if ( this.scrolltimeron )
       {
         clearTimeout( this.scrolltimer );
       }
       this.scrolltimeron = true;
-      this.scrolltimer = setTimeout(() => { this.ResetCanvasPosition_(); }, 100 );
+      this.scrolltimer = setTimeout(() => { this.resetCanvasPosition_(); }, 100 );
       return true;
     }
 
-    public SetCanvas(canvas: HTMLCanvasElement): boolean
+    public setCanvas(canvas: HTMLCanvasElement): boolean
     {
       //canvas.addEventListener("click", (ev: DragEvent) => { this.ClickEvent(ev) }, false);
       this.canvas = canvas;
 
-      if (Input.CanUseTouch())
+      if (Input.canUseTouch())
       {
-        this.AddTouchEvent(canvas);
-        this.AddMouseEvent(canvas);
+        this.addTouchEvent(canvas);
+        this.addMouseEvent(canvas);
       } else
       {
-        this.AddMouseEvent( canvas );
+        this.addMouseEvent( canvas );
       }
-      this.AddKeyEvent();
+      this.addKeyEvent();
       
       //this.cx = canvas.offsetLeft;
       //this.cy = canvas.offsetTop;
-      this.ResetCanvasPosition();
+      this.resetCanvasPosition();
 
-      window.addEventListener( "scroll", () => { this.ResetCanvasPosition(); }, false );
+      window.addEventListener( "scroll", () => { this.resetCanvasPosition(); }, false );
       
       return true;
     }
 
-    public GetX(): number
+    public getX(): number
     {
       return this.mx;
     }
 
-    public GetY(): number
+    public getY(): number
     {
       return this.my;
     }
 
-    public GetMouse(): number
+    public getMouse(): number
     {
       return this.clickframe;
     }
 
-    public GetKeyNum(keynum: number): number
+    public getKeyNum(keynum: number): number
     {
       if (this.keyframe[keynum]) { return this.keyframe[keynum];}
       return 0;
@@ -498,7 +501,7 @@ module Jaffa
 
   export class Net
   {
-    private HttpCreate(): XMLHttpRequest
+    private httpCreate(): XMLHttpRequest
     {
       var httpobj: XMLHttpRequest = null;
       try
@@ -523,10 +526,10 @@ module Jaffa
       return httpobj;
     }
 
-    public HttpGet(address: string, senddata:string = null ): string
+    public httpGet(address: string, senddata:string = null ): string
     {
       //オブジェクトを生成してもらう
-      var httpobj: XMLHttpRequest = this.HttpCreate();
+      var httpobj: XMLHttpRequest = this.httpCreate();
 
       if ( httpobj )
       {
@@ -537,9 +540,9 @@ module Jaffa
       return "";
     }
 
-    public HttpGet_(address: string, func: any = null): string {
+    public httpGet_(address: string, func: any = null): string {
       //オブジェクトを生成してもらう
-      var httpobj: XMLHttpRequest = this.HttpCreate();
+      var httpobj: XMLHttpRequest = this. httpCreate();
 
       if (httpobj)
       {
@@ -560,9 +563,11 @@ module Jaffa
     }
   }
 
-  class FontData {
+  class FontData
+  {
     public fontdata: string;
     public color: string;
+    public size: number;
   }
 
   export class DrawCanvas //implements JaffaDraw.Draw
@@ -572,19 +577,25 @@ module Jaffa
     private imgs: { [key: number]: HTMLImageElement; } = {};
     private fonts: { [key: number]: FontData; } = {};
 
-    constructor() {
+    constructor()
+    {
+      this.createFont( 0 );
     }
 
-    public GetCanvas(): HTMLCanvasElement {
+    public getCanvas(): HTMLCanvasElement
+    {
       return this.canvas;
     }
 
-    public SetCanvas(canvasid: string): boolean;
-    public SetCanvas(canvas: HTMLCanvasElement): boolean;
-    SetCanvas(value: any): boolean {
-      if (typeof (value) == "string") {
+    public setCanvas(canvasid: string): boolean;
+    public setCanvas(canvas: HTMLCanvasElement): boolean;
+    setCanvas(value: any): boolean
+    {
+      if (typeof (value) == "string")
+      {
         this.canvas = <HTMLCanvasElement>document.getElementById(value);
-      } else {
+      } else
+      {
         this.canvas = value;
       }
 
@@ -593,12 +604,14 @@ module Jaffa
       return true;
     }
 
-    public SetCanvasScale(scale: number): boolean {
+    public setCanvasScale(scale: number): boolean
+    {
       this.context.scale(scale, scale);
       return true;
     }
 
-    public LoadImage(imgnum: number, imgaddress: string): boolean {
+    public loadImage(imgnum: number, imgaddress: string): boolean
+    {
       this.imgs[imgnum] = new Image();
 
       this.imgs[imgnum].src = imgaddress; // Load image start.
@@ -606,41 +619,54 @@ module Jaffa
       return true;
     }
 
-    public ClearScreen(): boolean {
+    public clearScreen(): boolean
+    {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
       return true;
     }
 
-    public DrawBox(dx: number, dy: number, w: number, h: number, color: any): boolean {
+    public drawBox(dx: number, dy: number, w: number, h: number, color: any): boolean
+    {
       //var a = "rgba( 192, 80, 77, 255 )";
       this.context.fillStyle = color;
       this.context.fillRect(dx, dy, w, h);
       return true;
     }
 
-    public DrawImage(imgnum: number, rx: number, ry: number, w: number, h: number, dx: number, dy: number): boolean {
+    public drawImage(imgnum: number, rx: number, ry: number, w: number, h: number, dx: number, dy: number): boolean
+    {
       this.context.drawImage(this.imgs[imgnum], rx, ry, w, h, Math.floor(dx), Math.floor(dy), w, h);
       return true;
     }
 
-    public DrawImageC(imgnum: number, rx: number, ry: number, w: number, h: number, dx: number, dy: number): boolean {
+    public drawImageC(imgnum: number, rx: number, ry: number, w: number, h: number, dx: number, dy: number): boolean
+    {
       this.context.drawImage(this.imgs[imgnum], rx, ry, w, h, Math.floor(dx - w / 2), Math.floor(dy - h / 2), w, h);
       return true;
     }
 
-    public CreateFont(fontnum: number, fontdata: string, color: string) {
+    public setAlpha( alpha:number )
+    {
+      this.context.globalAlpha = alpha;
+    }
+
+    public createFont(fontnum: number, fontsize:number = 10, fontdata: string = "", color: string = "rgb(0,0,0)")
+    {
       this.fonts[fontnum] = new FontData();
       this.fonts[fontnum].fontdata = fontdata;
       this.fonts[fontnum].color = color;
+      this.fonts[fontnum].size = fontsize;
     }
 
-    public Print(fontnum: number, dx: number, dy: number, str: string): boolean {
-      if (this.fonts[fontnum]) {
-        this.context.font = this.fonts[fontnum].fontdata;
-        this.context.fillStyle = this.fonts[fontnum].color;
-      } else {
-        this.context.fillStyle = "rgb(0,0,0)";
+    public print(fontnum: number, dx: number, dy: number, str: string): boolean
+    {
+      if (!this.fonts[fontnum])
+      {
+        fontnum = 0;
       }
+      this.context.font = this.fonts[fontnum].fontdata;
+      this.context.fillStyle = this.fonts[fontnum].color;
+      dy += this.fonts[fontnum].size;
       this.context.fillText(str, dx, dy);
       return true;
     }
@@ -664,9 +690,9 @@ module Jaffa
         system = new Jaffa.System();
         draw = new DrawCanvas();
         input = new Jaffa.Input();
-        draw.SetCanvas(canvasid);
-        input.SetCanvas(draw.GetCanvas());
-        system.SetInput(input);
+        draw.setCanvas(canvasid);
+        input.setCanvas(draw.getCanvas());
+        system.setInput(input);
       }
       this.system = system;
       this.draw = draw;
@@ -675,13 +701,13 @@ module Jaffa
 
     public Start()
     {
-      this.system.SetNewGame( this );
-      this.system.Start();
+      this.system.setNewGame( this );
+      this.system.start();
     }
 
     public Stop()
     {
-      this.system.Stop();
+      this.system.stop();
     }
 
     // User method.
