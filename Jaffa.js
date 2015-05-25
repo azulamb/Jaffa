@@ -450,7 +450,6 @@ var Jaffa;
 
         Net.prototype.httpGet = function (address, senddata) {
             if (typeof senddata === "undefined") { senddata = null; }
-            //�I�u�W�F�N�g�𐶐����Ă�炤
             var httpobj = this.httpCreate();
 
             if (httpobj) {
@@ -463,7 +462,6 @@ var Jaffa;
 
         Net.prototype.httpGet_ = function (address, func) {
             if (typeof func === "undefined") { func = null; }
-            //�I�u�W�F�N�g�𐶐����Ă�炤
             var httpobj = this.httpCreate();
 
             if (httpobj) {
@@ -556,7 +554,7 @@ var Jaffa;
             if (typeof fontdata === "undefined") { fontdata = ""; }
             if (typeof color === "undefined") { color = "rgb(0,0,0)"; }
             this.fonts[fontnum] = new FontData();
-            this.fonts[fontnum].fontdata = fontdata;
+            this.fonts[fontnum].fontdata = fontsize + "px " + fontdata;
             this.fonts[fontnum].color = color;
             this.fonts[fontnum].size = fontsize;
         };
