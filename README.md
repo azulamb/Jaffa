@@ -25,7 +25,7 @@ Jaffa is Game library for TypeScript.
 
     /// <reference path="Jaffa.ts"/>
 
-    clads Game extends Jaffa.Game
+    class Game extends Jaffa.Game
     {
       // override
       // prepare. call first.
@@ -38,7 +38,7 @@ Jaffa is Game library for TypeScript.
       public MainLoop() : boolean
       {
         // clear canvas screen.
-        this.draw.ClearScreen();
+        this.draw.clearScreen();
         
         // return false; is end.
         return true;
