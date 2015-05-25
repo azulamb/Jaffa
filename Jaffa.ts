@@ -1,4 +1,7 @@
-﻿module Jaffa
+﻿// TODO: anmaton farme
+// window.requestAnimationFrame
+
+module Jaffa
 {
 	export class System
 	{
@@ -35,6 +38,8 @@
 			return this.game.MainLoop();
 		}
 
+		public isRun(): boolean { return this.isrun; }
+
 		public setInput( input: Jaffa.Input ): boolean
 		{
 			this.input = input;
@@ -53,7 +58,7 @@
 		{
 			//var now = +new Date();
 
-			if ( this.gameLoop() && this.run )
+			if ( this.gameLoop() && this.isrun )
 			{
 				//var wait;
 				//if ( this.framecount >= this.fps )
@@ -161,6 +166,17 @@
 
 			return 'none';
 		}
+		public static isiOS(): boolean
+		{
+			var userAgent: string = window.navigator.userAgent.toLowerCase();
+			if ( userAgent.indexOf( 'ipad' ) != -1 ||
+				userAgent.indexOf( 'ipod' ) != -1 ||
+				userAgent.indexOf( 'iphone' ) != -1 )
+			{
+				return true;
+			}
+			return false;
+		}
 	} // System
 
 	export class Input
@@ -237,7 +253,7 @@
 		private touchUp( ev: any ): boolean
 		{
 			this.click = false;
-			this.touchEvent( ev );
+			//this.touchEvent( ev );
 			return false;
 		}
 
@@ -335,13 +351,13 @@
 		public addTouchEvent( canvas: HTMLCanvasElement ): boolean;
 		public addTouchEvent( canvas: HTMLCanvasElement = this.canvas, mouseremove: boolean = true ): boolean
 		{
-			if ( mouseremove )
+			/*if ( mouseremove )
 			{
 				this.removeMouseEvent( canvas );
 			} else if ( this.toucheventdown != null || this.toucheventmove != null || this.toucheventup != null )
 			{
 				this.removeTouchEvent( canvas );
-			}
+			}*/
 
 			this.toucheventdown = ( ev ) => { this.touchDown( ev ) };
 			this.toucheventmove = ( ev ) => { this.touchEvent( ev ) };
@@ -377,13 +393,13 @@
 		public addMouseEvent( canvas: HTMLCanvasElement ): boolean;
 		public addMouseEvent( canvas: HTMLCanvasElement = this.canvas, touchremove: boolean = true ): boolean
 		{
-			if ( touchremove )
+			/*if ( touchremove )
 			{
 				this.removeTouchEvent( canvas );
 			} else if ( this.mouseeventdown != null || this.mouseeventmove != null || this.mouseeventup != null )
 			{
 				this.removeMouseEvent( canvas );
-			}
+			}*/
 
 			this.mouseeventdown = ( ev: DragEvent ) => { this.mouseDown( ev ) };
 			this.mouseeventmove = ( ev: DragEvent ) => { this.mouseEvent( ev ) };
@@ -588,6 +604,11 @@
 			return this.canvas;
 		}
 
+		public getImage(imgnum:number):HTMLImageElement
+		{
+			return this.imgs[imgnum];
+		}
+
 		public setCanvas( canvasid: string ): boolean;
 		public setCanvas( canvas: HTMLCanvasElement ): boolean;
 		setCanvas( value: any ): boolean
@@ -601,13 +622,23 @@
 			}
 
 			this.context = this.canvas.getContext( "2d" );
-			var ctx: any = this.context;
-			ctx.mozImageSmoothingEnabled = false;
-			ctx.webkitImageSmoothingEnabled = false;
-			ctx.msImageSmoothingEnabled = false;
-			ctx.imageSmoothingEnabled = false;
+			
+			this.enableDrawPixelMode();
 
 			return true;
+		}
+
+		public enableDrawPixelMode( enable: boolean = true )
+		{
+			enable = !enable;
+			var ctx: any = this.context;
+			if ( ctx.imageSmoothingEnabled === undefined || System.isiOS() )
+			{
+				ctx.webkitImageSmoothingEnabled = enable;
+			}
+			ctx.imageSmoothingEnabled = enable;
+			ctx.mozImageSmoothingEnabled = enable;
+			ctx.msImageSmoothingEnabled = enable;
 		}
 
 		public setCanvasScale( scale: number ): boolean
@@ -616,12 +647,18 @@
 			return true;
 		}
 
-		public loadImage( imgnum: number, imgaddress: string ): boolean
+		public loadImage(imgnum: number, imgaddress: string): boolean;
+		public loadImage(imgnum: number, imgelement: HTMLImageElement ): boolean;
+		loadImage(imgnum: number, img:any): boolean
 		{
-			this.imgs[imgnum] = new Image();
-
-			this.imgs[imgnum].src = imgaddress; // Load image start.
-
+			if (typeof (img) == "string")
+			{
+				this.imgs[imgnum] = new Image();
+				this.imgs[imgnum].src = img; // Load image start.
+			} else
+			{
+				this.imgs[imgnum] = img;
+			}
 			return true;
 		}
 
@@ -639,21 +676,131 @@
 			return true;
 		}
 
-		public drawImage( imgnum: number, rx: number, ry: number, w: number, h: number, dx: number, dy: number ): boolean
+		public drawImage(imgnum: number, dx: number, dy: number): boolean;
+		public drawImage(imgnum: number, rx: number, ry: number, w: number, h: number, dx: number, dy: number): boolean;
+		drawImage(imgnum: number, x: number, y: number, w: any = undefined, h: any = undefined, dx: any = undefined, dy: any = undefined ): boolean
 		{
-			this.context.drawImage( this.imgs[imgnum], rx, ry, w, h, Math.floor( dx ), Math.floor( dy ), w, h );
+			//ctx.scale(-1, 1);
+			if (w === undefined)
+			{
+				this.context.drawImage(this.imgs[imgnum], 0, 0, this.imgs[imgnum].width, this.imgs[imgnum].height, Math.floor(x), Math.floor(y), this.imgs[imgnum].width, this.imgs[imgnum].height);
+			} else
+			{
+				this.context.drawImage(this.imgs[imgnum], x, y, w, h, Math.floor(dx), Math.floor(dy), w, h);
+			}
 			return true;
 		}
 
-		public drawImageC( imgnum: number, rx: number, ry: number, w: number, h: number, dx: number, dy: number ): boolean
+		public drawImageC(imgnum: number, dx: number, dy: number): boolean;
+		public drawImageC(imgnum: number, rx: number, ry: number, w: number, h: number, dx: number, dy: number): boolean;
+		drawImageC(imgnum: number, rx: number, ry: number, w: any = undefined, h: any = undefined, dx: any = undefined, dy: any = undefined): boolean
 		{
-			this.context.drawImage( this.imgs[imgnum], rx, ry, w, h, Math.floor( dx - w / 2 ), Math.floor( dy - h / 2 ), w, h );
+			if (w === undefined)
+			{
+				dx = rx;
+				dy = ry;
+				rx = 0;
+				ry = 0;
+				w = this.imgs[imgnum].width;
+				h = this.imgs[imgnum].height;
+			}
+			this.context.drawImage(this.imgs[imgnum], rx, ry, w, h, Math.floor(dx - w / 2), Math.floor(dy - h / 2), w, h);
 			return true;
 		}
 
-		public drawImageScaling( imgnum: number, rx: number, ry: number, w: number, h: number, dx: number, dy: number, scale:number ): boolean
+		public drawImageScaling( imgnum: number, rx: number, ry: number, w: number, h: number, dx: number, dy: number, scale: number ): boolean;
+		public drawImageScaling( imgnum: number, rx: number, ry: number, w: number, h: number, dx: number, dy: number, dw: number, dh: number ): boolean;
+		drawImageScaling( imgnum: number, rx: number, ry: number, w: number, h: number, dx: number, dy: number, scale: number, dh:any = undefined )
 		{
-			this.context.drawImage( this.imgs[imgnum], rx, ry, w, h, Math.floor( dx ), Math.floor( dy ), Math.floor( w * scale ), Math.floor( h * scale ) );
+			if ( dh === undefined )
+			{
+				this.context.drawImage( this.imgs[imgnum], rx, ry, w, h, dx, dy, w * scale, h * scale );
+			} else
+			{
+				this.context.drawImage( this.imgs[imgnum], rx, ry, w, h, dx, dy, scale, dh );
+			}
+			return true;
+		}
+
+		//public drawImageScalingC(imgnum: number, dx: number, dy: number, scale: number): boolean;
+		//public drawImageScalingC(imgnum: number, dx: number, dy: number, dw: number, dh: number): boolean;
+		public drawImageScalingC(imgnum: number, rx: number, ry: number, w: number, h: number, dx: number, dy: number, scale: number): boolean;
+		public drawImageScalingC(imgnum: number, rx: number, ry: number, w: number, h: number, dx: number, dy: number, dw: number, dh: number): boolean;
+		drawImageScalingC(imgnum: number, x: number, y: number, w: number, h: number, dx: number, dy: number, dw: number, dh: any = undefined): boolean
+		{
+			if (dh === undefined)
+			{
+				dh = h * dw;
+				dw = w * dw;
+			}
+			this.context.drawImage(this.imgs[imgnum], x, y, w, h, Math.floor(dx - dw / 2), Math.floor(dy - dh / 2), dw, dh);
+			return true;
+		}
+
+		public drawImageRotqtionC(imgnum: number, dx: number, dy: number, rad: number): boolean;
+		public drawImageRotqtionC(imgnum: number, rx: number, ry: number, w: number, h: number, dx: number, dy: number, rad: number): boolean;
+		drawImageRotqtionC(imgnum: number, x: number, y: number, w: number, h: any = undefined, dx: any = undefined, dy: any = undefined, rad: any = undefined): boolean
+		{
+			if (h === undefined)
+			{
+				rad = w;
+				dx = x;
+				dy = y;
+				w = this.imgs[imgnum].width;
+				h = this.imgs[imgnum].height;
+				x = 0;
+				y = 0;
+			}
+			this.context.save();
+			this.context.translate(dx, dy);
+			this.context.rotate(rad);
+			this.context.drawImage(this.imgs[imgnum], x, y, w, h, -w/2, -h/2, w, h);
+			this.context.restore();
+			return true;
+		}
+
+		public drawImageScaleRotateC(imgnum: number, dx: number, dy: number, scale: number, rad: number): boolean;
+		public drawImageScaleRotateC(imgnum: number, dx: number, dy: number, dw: number, dh: number, rad: number): boolean;
+		public drawImageScaleRotateC(imgnum: number, rx: number, ry: number, w: number, h: number, scale: number, rad: number): boolean;
+		public drawImageScaleRotateC(imgnum: number, rx: number, ry: number, w: number, h: number, dx: number, dy: number, scale:number, rad: number): boolean;
+		drawImageScaleRotateC(imgnum: number, rx: number, ry: number, w: number, h: number, dx: any = undefined, dy: any = undefined, dw:number = undefined, dh:number = undefined, rad: any = undefined): boolean
+		{
+			
+			if (dx === undefined)
+			{
+				rad = h;
+				dw = this.imgs[imgnum].width * w;
+				dh = this.imgs[imgnum].height * w;
+				w = this.imgs[imgnum].width;
+				h = this.imgs[imgnum].height;
+				dx = rx;
+				dy = ry;
+				rx = 0;
+				ry = 0;
+			} else if (dy === undefined)
+			{
+				rad = dx;
+				dh = h;
+				dw = w;
+				w = this.imgs[imgnum].width;
+				h = this.imgs[imgnum].height;
+				dx = rx;
+				dy = ry;
+				rx = 0;
+				ry = 0;
+			} else if (rad === undefined)
+			{
+				rad = dh;
+				dh = h * dw;
+				dw = w * dw;
+			} else
+			{
+			}
+			this.context.save();
+			this.context.translate(dx, dy);
+			this.context.rotate(rad);
+			this.context.drawImage(this.imgs[imgnum], rx, ry, w, h, -dw / 2, -dh / 2, dw, dh);
+			this.context.restore();
 			return true;
 		}
 
