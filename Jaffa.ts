@@ -465,7 +465,8 @@ module Jaffa
 				clearTimeout( this.scrolltimer );
 			}
 			this.scrolltimeron = true;
-			this.scrolltimer = setTimeout( () => { this.resetCanvasPosition_(); }, 100 );
+			// TODO: fix type.
+			this.scrolltimer = <any>setTimeout( () => { this.resetCanvasPosition_(); }, 100 );
 			return true;
 		}
 
