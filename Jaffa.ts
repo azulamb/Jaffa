@@ -1,8 +1,41 @@
-﻿// TODO: anmaton farme
+// TODO: anmaton farme
 // window.requestAnimationFrame
 
 module Jaffa
 {
+	export const K_LEFT: number = 37;
+	export const K_UP: number = 38;
+	export const K_RIGHT: number = 39;
+	export const K_DOWN: number = 40;
+	export const K_SPACE: number = 32;
+	export const K_ENTER: number = 13;
+	export const K_A: number = 65;
+	export const K_B: number = 66;
+	export const K_C: number = 67;
+	export const K_D: number = 68;
+	export const K_E: number = 69;
+	export const K_F: number = 80;
+	export const K_G: number = 71;
+	export const K_H: number = 72;
+	export const K_I: number = 73;
+	export const K_J: number = 74;
+	export const K_K: number = 75;
+	export const K_L: number = 76;
+	export const K_M: number = 77;
+	export const K_N: number = 78;
+	export const K_O: number = 79;
+	export const K_P: number = 80;
+	export const K_Q: number = 81;
+	export const K_R: number = 82;
+	export const K_S: number = 83;
+	export const K_T: number = 84;
+	export const K_U: number = 85;
+	export const K_V: number = 86;
+	export const K_W: number = 87;
+	export const K_X: number = 88;
+	export const K_Y: number = 89;
+	export const K_Z: number = 90;
+
 	export class System
 	{
 		private nextgame: Jaffa.Game;
@@ -200,11 +233,6 @@ module Jaffa
 		private canvas: HTMLCanvasElement;
 		private scrolltimer: number;
 		private scrolltimeron: boolean;
-		public static K_LEFT: number = 37;
-		public static K_UP: number = 38;
-		public static K_RIGHT: number = 39;
-		public static K_DOWN: number = 40;
-		public static K_SPACE: number = 32;
 
 		constructor()
 		{
@@ -465,7 +493,6 @@ module Jaffa
 				clearTimeout( this.scrolltimer );
 			}
 			this.scrolltimeron = true;
-			// TODO: fix type.
 			this.scrolltimer = <any>setTimeout( () => { this.resetCanvasPosition_(); }, 100 );
 			return true;
 		}
